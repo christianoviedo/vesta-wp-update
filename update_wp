@@ -13,8 +13,7 @@ function main_prog() {
                 if [[ ! " ${EXCLUDE_USERS[*]} " =~ " ${PARTS[2]} " ]]; then
                         echo "Actualizando Wordpress de usuario: ${PARTS[2]} - ${PARTS[4]}"
                         cd ${output::-23}
-                        sudo -H -u ${PARTS[2]} bash -c 'wp core update; wp plugin update --all; wp plugin install wordfence --activate; wp theme delete twent
-ynineteen twentyseventeen twentysixteentwentytwenty twentytwentyone twentyfifteen twentytwentytwo' >> $LOGFILE 2>&1
+                        sudo -H -u ${PARTS[2]} bash -c 'wp core update; wp plugin update --all; wp plugin install wordfence --activate; wp theme delete twentynineteen twentyseventeen twentysixteentwentytwenty twentytwentyone twentyfifteen twentytwentytwo' >> $LOGFILE 2>&1
                 fi                                                         
         done                             
 }                                                                                              

@@ -3,6 +3,7 @@
 BASE_DIR='/home/'
 EXCLUDE_USERS=('user1 user2')
 LOGFILE='/var/log/update_wp.log'
+LOGDIR='/var/log/update_wp'
 
 function main_prog() {    
         while read output;
@@ -11,12 +12,13 @@ function main_prog() {
 
                 # vemos que no esté en las cuentas excluidas
                 if [[ ! " ${EXCLUDE_USERS[*]} " =~ " ${PARTS[2]} " ]]; then
-                        echo "Actualizando Wordpress de usuario: ${PARTS[2]} - ${PARTS[4]}"
+                        echo "Actualizando Wordpress de usuario: ${PARTS[2]} - ${PARTS[4]}" >> $LOGFILE
                         cd ${output::-23}
-                        sudo -H -u ${PARTS[2]} bash -c 'wp core update; wp plugin update --all; wp plugin install wordfence --activate; wp theme delete twentynineteen twentyseventeen twentysixteentwentytwenty twentytwentyone twentyfifteen twentytwentytwo' >> $LOGFILE 2>&1
+                        sudo -H -u ${PARTS[2]} bash -c 'wp core update; wp plugin update --all; wp plugin install wordfence --activate; wp theme delete twentynineteen twentyseventeen twentysixteen twentytwenty twentytwentyone' >> $LOGDIR/${PARTS[2]}-${PARTS[4]}.log 2>&1
                 fi                                                         
         done                             
 }                                                                                              
 
+[ -d $LOGDIR ] || mkdir -p $LOGDIR
 find $BASE_DIR -name 'version.php' -path '*wp-includes/*' -print | main_prog
  

@@ -2,7 +2,7 @@
 
 Automatically updates Wordpress installations in VestaCP servers.
 
-# Wordpress autoupdate install
+# Wordpress update install
 
 1. Install wp cli in server
 2. Copy update_wp to /etc/cron.weekly or another cron folder

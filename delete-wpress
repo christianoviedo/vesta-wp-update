@@ -1,3 +1,3 @@
 #!/bin/bash
 
-find /home -name "*.wpress" | xargs rm
+find /home -name "*.wpress" | xargs -r rm

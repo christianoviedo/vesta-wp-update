@@ -21,7 +21,7 @@ function main_prog() {
 -------------------------------
 EOF
 
-                        sudo -H -u ${PARTS[2]} bash -c 'wp core update; wp plugin update --all; wp plugin install wordfence --activate; wp theme delete twentytwentytwo twentytwentythree twentytwentyone twentytwenty twentynineteen twentyseventeen twentysixteen twentyfourteen' >> $LOGDIR/${PARTS[2]}-${PARTS[4]}.log 2>&1
+                        sudo -H -u ${PARTS[2]} bash -c 'wp core update; wp plugin update --all; wp plugin install wordfence --activate; wp plugin install wp-security-hardening --activate; wp theme delete twentytwentytwo twentytwentythree twentytwentyone twentytwenty twentynineteen twentyseventeen twentysixteen twentyfourteen' >> $LOGDIR/${PARTS[2]}-${PARTS[4]}.log 2>&1
                         
                         # limpiamos los archivos descargados
                         sudo -H -u ${PARTS[2]} bash -c 'wp cli cache clear' >> $LOGDIR/${PARTS[2]}-${PARTS[4]}.log 2>&1

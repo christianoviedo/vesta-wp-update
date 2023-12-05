@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BASE_DIR='/home/'
-EXCLUDE_USERS=('user1 user2')
+EXCLUDE_USERS=('admin')
 LOGFILE='/var/log/update_wp.log'
 LOGDIR='/var/log/update_wp'
 

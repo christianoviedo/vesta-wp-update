@@ -34,7 +34,7 @@ function main_prog() {
 -------------------------------
 EOF
 
-                        # Ejecuta las actualizaciones como el usuario due??o del sitio
+                        # Ejecuta las actualizaciones como el usuario dueño del sitio
                         sudo -H -u "$USER" bash -c '
                                 wp core update
                                 wp plugin update --all

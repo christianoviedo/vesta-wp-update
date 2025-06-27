@@ -5,30 +5,60 @@ EXCLUDE_USERS=('admin')
 LOGFILE='/var/log/update_wp.log'
 LOGDIR='/var/log/update_wp'
 
+# Función principal que realiza la actualizaci??n de WordPress por sitio
 function main_prog() {    
         while read output;
         do            
+                # Separa la ruta para extraer el nombre del usuario y dominio
                 IFS="/" read -ra PARTS <<< $output
+                USER="${PARTS[2]}"
+                DOMAIN="${PARTS[4]}"
+                WP_PATH="${output::-23}" # Ruta base del sitio WordPress
 
                 # vemos que no esté en las cuentas excluidas
-                if [[ ! " ${EXCLUDE_USERS[*]} " =~ " ${PARTS[2]} " ]]; then
-                        echo "Actualizando Wordpress de usuario: ${PARTS[2]} - ${PARTS[4]}" >> $LOGFILE
-                        cd ${output::-23}
+                if [[ ! " ${EXCLUDE_USERS[*]} " =~ " ${USER} " ]]; then
+                        echo "Actualizando Wordpress de usuario: ${USER} - ${DOMAIN}" >> $LOGFILE
+                        cd ${WP_PATH}
 
-                        cat >> $LOGDIR/${PARTS[2]}-${PARTS[4]}.log << EOF
+                        # Rutas de respaldo temporal
+                        BACKUP_WPCONFIG="$WP_PATH/wp-config.php.bak"
+                        BACKUP_HTACCESS="$WP_PATH/.htaccess.bak"
+
+                        # Respaldar archivos si existen
+                        [ -f wp-config.php ] && cp -p wp-config.php "$BACKUP_WPCONFIG"
+                        [ -f .htaccess ] && cp -p .htaccess "$BACKUP_HTACCESS"
+
+                        cat >> "$LOGDIR/${USER}-${DOMAIN}.log" << EOF
 ===============================
 `date`
 -------------------------------
 EOF
 
-                        sudo -H -u ${PARTS[2]} bash -c 'wp core update; wp plugin update --all; wp plugin install wordfence --activate; wp theme delete twentyfourteen twentysixteen twentyseventeen twentynineteen twentytwenty twentytwentyone twentytwentytwo twentytwentythree twentytwentyfour' >> $LOGDIR/${PARTS[2]}-${PARTS[4]}.log 2>&1
-                        
+                        # Ejecuta las actualizaciones como el usuario due??o del sitio
+                        sudo -H -u "$USER" bash -c '
+                                wp core update
+                                wp plugin update --all
+                                wp plugin install wordfence --activate
+                                wp plugin deactivate wp-security-hardening
+                                wp theme delete twentyfourteen twentysixteen twentyseventeen twentynineteen twentytwenty twentytwentyone twentytwentytwo twentytwentythree twentytwentyfour
+                        ' >> $LOGDIR/${USER}-${DOMAIN}.log 2>&1
+
+                        # Restaurar wp-config.php y .htaccess desde los respaldos si existen
+                        [ -f "$BACKUP_WPCONFIG" ] && mv -f "$BACKUP_WPCONFIG" wp-config.php
+                        [ -f "$BACKUP_HTACCESS" ] && mv -f "$BACKUP_HTACCESS" .htaccess
+
+                        # Asegurar propiedad del usuario
+                        chown "$USER:$USER" wp-config.php .htaccess 2>/dev/null
+
                         # limpiamos los archivos descargados
-                        sudo -H -u ${PARTS[2]} bash -c 'wp cli cache clear' >> $LOGDIR/${PARTS[2]}-${PARTS[4]}.log 2>&1
+                        sudo -H -u "$USER" bash -c 'wp cli cache clear' >> "$LOGDIR/${USER}-${DOMAIN}.log" 2>&1
                 fi                                                         
         done                             
 }                                                                                              
 
+# Crear directorio de logs si no existe
 [ -d $LOGDIR ] || mkdir -p $LOGDIR
+
+# Buscar todos los archivos version.php dentro de wp-includes para detectar instalaciones de WordPress
+# y pasar la lista a la función principal
 find $BASE_DIR -name 'version.php' -path '*wp-includes/*' -print | main_prog
- 

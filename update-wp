@@ -2,8 +2,14 @@
 
 BASE_DIR='/home/'
 EXCLUDE_USERS=('admin')
+EXCLUDE_DOMAINS=('midominio.com')
 LOGFILE='/var/log/update_wp.log'
 LOGDIR='/var/log/update_wp'
+
+# Detectar si es VestaCP
+is_vestacp() {
+    [ -d /usr/local/vesta ] || [ -f /usr/local/vesta/conf/vesta.conf ]
+}
 
 # Función principal que realiza la actualizaci??n de WordPress por sitio
 function main_prog() {    
@@ -12,8 +18,16 @@ function main_prog() {
                 # Separa la ruta para extraer el nombre del usuario y dominio
                 IFS="/" read -ra PARTS <<< $output
                 USER="${PARTS[2]}"
-                DOMAIN="${PARTS[4]}"
-                WP_PATH="${output::-23}" # Ruta base del sitio WordPress
+
+                # Asignación de DOMAIN según tipo de servidor
+                if is_vestacp; then
+                        DOMAIN="${PARTS[4]}"
+                else # Laravel Forge
+                        DOMAIN="${PARTS[3]}"
+                fi
+
+                # Ruta base del sitio WordPress
+                WP_PATH="${output::-23}" 
 
                 # vemos que no esté en las cuentas excluidas
                 if [[ ! " ${EXCLUDE_USERS[*]} " =~ " ${USER} " ]]; then

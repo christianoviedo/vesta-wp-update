@@ -1,5 +1,11 @@
 #!/bin/bash
 
+BASE_DIR='/home/'
+EXCLUDE_USERS=('admin')
+EXCLUDE_DOMAINS=('midominio.com')
+LOGFILE='/var/log/update_wp.log'
+LOGDIR='/var/log/update_wp'
+
 # Verificar espacio libre antes de continuar (mínimo 5% libre o 1 GB)
 MIN_FREE_MB=1024
 
@@ -15,12 +21,6 @@ if [ "$AVAILABLE_PCT" -ge 95 ]; then
     echo "[ERROR] Espacio en disco crítico: uso de $AVAILABLE_PCT%" >> /var/log/update_wp.log
     exit 1
 fi
-
-BASE_DIR='/home/'
-EXCLUDE_USERS=('admin')
-EXCLUDE_DOMAINS=('midominio.com')
-LOGFILE='/var/log/update_wp.log'
-LOGDIR='/var/log/update_wp'
 
 # Detectar si es VestaCP
 is_vestacp() {

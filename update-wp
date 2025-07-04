@@ -13,12 +13,12 @@ AVAILABLE_MB=$(df / | awk 'NR==2 {print $4}')
 AVAILABLE_PCT=$(df / | awk 'NR==2 {print $5}' | tr -d '%')
 
 if [ "$AVAILABLE_MB" -lt "$MIN_FREE_MB" ]; then
-    echo "[ERROR] Espacio en disco insuficiente: solo $AVAILABLE_MB KB disponibles" >> /var/log/update_wp.log
+    echo "[ERROR] Espacio en disco insuficiente: solo $AVAILABLE_MB KB disponibles" >> $LOGFILE
     exit 1
 fi
 
 if [ "$AVAILABLE_PCT" -ge 95 ]; then
-    echo "[ERROR] Espacio en disco crítico: uso de $AVAILABLE_PCT%" >> /var/log/update_wp.log
+    echo "[ERROR] Espacio en disco crítico: uso de $AVAILABLE_PCT%" >> $LOGFILE
     exit 1
 fi
 

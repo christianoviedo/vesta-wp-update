@@ -65,12 +65,13 @@ function main_prog() {
 EOF
 
                         # Ejecuta las actualizaciones como el usuario dueño del sitio
+                        WP_CLI="wp --path=$WP_PATH --url=https://$DOMAIN --skip-plugins=qtranslate-xt"
                         sudo -H -u "$USER" bash -c '
-                                wp core update
-                                wp plugin update --all
-                                wp plugin install wordfence --activate
-                                wp plugin deactivate wp-security-hardening
-                                wp theme delete twentyfourteen twentysixteen twentyseventeen twentynineteen twentytwenty twentytwentyone twentytwentytwo twentytwentythree twentytwentyfour
+                                $WP_CLI core update
+                                $WP_CLI plugin update --all
+                                $WP_CLI plugin install wordfence --activate
+                                $WP_CLI plugin deactivate wp-security-hardening
+                                $WP_CLI theme delete twentyfourteen twentysixteen twentyseventeen twentynineteen twentytwenty twentytwentyone twentytwentytwo twentytwentythree twentytwentyfour
                         ' >> $LOGDIR/${USER}-${DOMAIN}.log 2>&1
 
                         # Restaurar wp-config.php y .htaccess desde los respaldos si existen
